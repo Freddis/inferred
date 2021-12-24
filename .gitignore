@@ -1,1 +1,5 @@
 .idea
+vendor
+tests/generated
+
+.phpunit.result.cache

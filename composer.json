@@ -9,6 +9,11 @@
             "email": "asarychev@home-studio.pro"
         }
     ],
+    "autoload": {
+        "classmap": ["src/"]
+    },
     "minimum-stability": "dev",
-    "require": {}
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
 }
