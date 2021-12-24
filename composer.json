@@ -1,0 +1,14 @@
+{
+    "name": "freddis/inferred",
+    "description": "Code Generator that allows to create create multiple classes with the parametric templates. Designed as a tool to overcome problems related to missing generic types in PHP.",
+    "type": "library",
+    "license": "GNU GPL",
+    "authors": [
+        {
+            "name": "Sarychev Alexei",
+            "email": "asarychev@home-studio.pro"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
