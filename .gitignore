@@ -1,5 +1,6 @@
 .idea
 vendor
 tests/generated
-
+coverage
+.DS_Store
 .phpunit.result.cache

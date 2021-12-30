@@ -1,10 +1,19 @@
 <?php declare(strict_types=1);
 
 namespace Inferred;
-class Schema
+
+
+use Inferred\Collections\FieldSchemaList;
+use Inferred\Collections\MethodSchemaList;
+
+abstract class Schema
 {
-    private ?string $parent = null;
-    private string $name;
+    protected string $name;
+    protected ?string $parent = null;
+
+    abstract public function getMethods(): MethodSchemaList;
+
+    abstract public function getFields() : FieldSchemaList;
 
     public function __construct(string $name)
     {
@@ -16,7 +25,7 @@ class Schema
         $this->parent = $class;
     }
 
-    public function getName()
+    public function getName(): string
     {
         return $this->name;
     }
@@ -24,5 +33,10 @@ class Schema
     public function getParent(): ?string
     {
         return $this->parent;
+    }
+
+    public function hasParent(): bool
+    {
+        return $this->parent != null;
     }
 }
