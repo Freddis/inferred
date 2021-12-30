@@ -29,7 +29,18 @@ class TypeSchema implements ITypeSchema
 
     public function toString(): string
     {
-        $string = ($this->isNullable ? '?' : '') . '\\' . $this->getName();
+
+        $string = ($this->isNullable ? '?' : '') . ($this->isPrimitive() ? '' : '\\') . $this->getName();
         return $string;
+    }
+
+    protected function isPrimitive(): bool
+    {
+        try {
+            new \ReflectionClass($this->getName());
+            return false;
+        } catch (\Throwable) {
+            return true;
+        }
     }
 }

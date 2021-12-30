@@ -5,15 +5,26 @@ namespace Inferred;
 
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
+use Inferred\Collections\StringList;
 
 abstract class Schema
 {
     protected string $name;
     protected ?string $parent = null;
+    protected ?string $namespace = null;
 
     abstract public function getMethods(): MethodSchemaList;
 
-    abstract public function getFields() : FieldSchemaList;
+    abstract public function getFields(): FieldSchemaList;
+
+    abstract public function getUsedNamespaces(): StringList;
+
+    abstract public function isStrict();
+
+    public function getNamespace(): ?string
+    {
+        return $this->namespace;
+    }
 
     public function __construct(string $name)
     {
@@ -38,5 +49,10 @@ abstract class Schema
     public function hasParent(): bool
     {
         return $this->parent != null;
+    }
+
+    public function setNamespace(string $namespace)
+    {
+        $this->namespace = $namespace;
     }
 }

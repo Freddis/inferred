@@ -11,18 +11,18 @@ class TemplateSchemaTest extends TestCase
 {
     public function testMethods()
     {
-        if (file_exists(__DIR__ . "/../generated/TemplateTestClass.php")) {
-            unlink(__DIR__ . "/../generated/TemplateTestClass.php");
+        if (file_exists(__DIR__ . "/../classes/Generated/TemplateTestClass.php")) {
+            unlink(__DIR__ . "/../classes/Generated/TemplateTestClass.php");
         }
-        $this->assertFileDoesNotExist(__DIR__ . "/../generated/TemplateTestClass.php");
-        $generator = new Inferred\Generator(__DIR__ . "/../generated");
+        $this->assertFileDoesNotExist(__DIR__ . "/../classes/Generated/TemplateTestClass.php");
+        $generator = new Inferred\Generator(__DIR__ . "/../classes/Generated");
 
         $schema = new Inferred\TemplateSchema(TypeCasterTemplate::class, 'TemplateTestClass');
         $schema->addTemplateType(new TemplateType(T1::class, SomeClass::class));
         $generator->generate($schema);
 
-        $this->assertTrue(file_exists(__DIR__ . "/../generated/TemplateTestClass.php"), "Generated file isn't created.");
-        require_once __DIR__ . "/../generated/TemplateTestClass.php";
+        $this->assertTrue(file_exists(__DIR__ . "/../classes/Generated/TemplateTestClass.php"), "Generated file isn't created.");
+        require_once __DIR__ . "/../classes/Generated/TemplateTestClass.php";
         $generatedClass = 'TemplateTestClass';
         $internal = new SomeClass();
         $object = new $generatedClass($internal);
@@ -32,18 +32,18 @@ class TemplateSchemaTest extends TestCase
 
     public function testFields()
     {
-        if (file_exists(__DIR__ . "/../generated/ListTestClass.php")) {
-            unlink(__DIR__ . "/../generated/ListTestClass.php");
+        if (file_exists(__DIR__ . "/../classes/Generated/ListTestClass.php")) {
+            unlink(__DIR__ . "/../classes/Generated/ListTestClass.php");
         }
-        $this->assertFileDoesNotExist(__DIR__ . "/../generated/ListTestClass.php");
-        $generator = new Inferred\Generator(__DIR__ . "/../generated");
+        $this->assertFileDoesNotExist(__DIR__ . "/../classes/Generated/ListTestClass.php");
+        $generator = new Inferred\Generator(__DIR__ . "/../classes/Generated");
 
         $schema = new Inferred\TemplateSchema(ListTemplate::class, 'ListTestClass');
         $schema->addTemplateType(new TemplateType(T1::class, SomeClass::class));
         $generator->generate($schema);
 
-        $this->assertTrue(file_exists(__DIR__ . "/../generated/ListTestClass.php"), "Generated file isn't created.");
-        require_once __DIR__ . "/../generated/ListTestClass.php";
+        $this->assertTrue(file_exists(__DIR__ . "/../classes/Generated/ListTestClass.php"), "Generated file isn't created.");
+        require_once __DIR__ . "/../classes/Generated/ListTestClass.php";
         $generatedClass = 'ListTestClass';
 
         $list = new $generatedClass();

@@ -2,6 +2,7 @@
 
 namespace Inferred\Tools;
 
+use Inferred\Collections\StringList;
 use ReflectionClass;
 use ReflectionException;
 
@@ -61,7 +62,7 @@ class BodyReader
         return $body;
     }
 
-    public function getNamespaces(): array
+    public function getUsedNamespaces(): StringList
     {
         //Getting used namespaces
         $trimmedFileLines = array_map('trim', $this->fileLines);
@@ -79,6 +80,36 @@ class BodyReader
             return $el;
         };
         $namespaces = array_map($trimNamespaces, $namespaceLines);
-        return $namespaces;
+
+        $result = new StringList();
+        foreach ($namespaces as $namespace) {
+            $result->add($namespace);
+        }
+
+        return $result;
+    }
+
+    public function getNamespace(): ?string
+    {
+        foreach ($this->fileLines as $line) {
+            $trimmed = trim($line);
+            if (str_starts_with(strtolower($trimmed), "namespace")) {
+                $trimmed = str_replace(";", '', $trimmed);
+                $trimmed = substr($trimmed, strlen("namespace"));
+                $trimmed = trim($trimmed);
+                return $trimmed;
+            }
+        }
+        return null;
+    }
+
+    public function isStrict(): bool
+    {
+        foreach ($this->fileLines as $line) {
+            if (str_contains($line, "declare(strict_types=1)")) {
+                return true;
+            }
+        }
+        return false;
     }
 }

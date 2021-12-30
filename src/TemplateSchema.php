@@ -4,6 +4,7 @@ namespace Inferred;
 
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
+use Inferred\Collections\StringList;
 use Inferred\Collections\TemplateTypeList;
 use Inferred\Tools\BodyReader;
 use Inferred\Types\ITypeSchema;
@@ -52,7 +53,7 @@ class TemplateSchema extends Schema
     protected function createMethodSchema(ReflectionMethod $method): MethodSchema
     {
         $schema = new MethodSchema($method->getName());
-        $namespaces = $this->bodyReader->getNamespaces();
+        $namespaces = $this->bodyReader->getUsedNamespaces();
         $body = $this->bodyReader->getMethodBody($schema->getName());
         $replacedBody = $this->replaceTemplateTypesInBody($body, $namespaces);
         $schema->setBody($replacedBody);
@@ -113,7 +114,7 @@ class TemplateSchema extends Schema
         return $schema;
     }
 
-    protected function replaceTemplateTypesInBody(string $body, array $namespaces): string
+    protected function replaceTemplateTypesInBody(string $body, StringList $namespaces): string
     {
         foreach ($this->templateTypes as $template) {
             $search = [];
@@ -129,7 +130,11 @@ class TemplateSchema extends Schema
                 }
             }
 
-            $body = str_replace($search, $template->getSubstituteType(), $body);
+            $substitute = $template->getSubstituteType();
+            if($substitute[0] !== "\\") {
+                $substitute = "\\".$substitute;
+            }
+            $body = str_replace($search, $substitute, $body);
         }
         return $body;
     }
@@ -179,5 +184,31 @@ class TemplateSchema extends Schema
         }
 
         return $fieldSchema;
+    }
+
+    public function getUsedNamespaces(): StringList
+    {
+        $namespaces = $this->bodyReader->getUsedNamespaces();
+        //Need to filter out namespaces that are going to be changed;
+        $templates = $this->templateTypes;
+        $result = new StringList();
+        foreach ($namespaces as $namespace) {
+            $add = true;
+            foreach ($templates as $template) {
+                if ($namespace === $template->getTemplateType()) {
+                    $add = false;
+                    break;
+                }
+            }
+            if ($add) {
+                $result->add($namespace);
+            }
+        }
+        return $result;
+    }
+
+    public function isStrict()
+    {
+        return $this->bodyReader->isStrict();
     }
 }
