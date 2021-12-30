@@ -5,8 +5,13 @@ namespace Inferred;
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
 use Inferred\Collections\StringList;
+use Inferred\Collections\TagList;
 use Inferred\Collections\TemplateTypeList;
+use Inferred\PhpDoc\DocComment;
+use Inferred\PhpDoc\SimpleTag;
 use Inferred\Tools\BodyReader;
+use Inferred\Tools\CommentReader;
+use Inferred\TypeCasters\SimpleTagTypeCaster;
 use Inferred\Types\ITypeSchema;
 use Inferred\Types\ParameterSchema;
 use Inferred\Types\TypeSchema;
@@ -72,6 +77,12 @@ class TemplateSchema extends Schema
             $schema->setVisibility(Visibility::Private);
         }
 
+        if ($method->getDocComment()) {
+            $parser = new CommentReader($method->getDocComment());
+            $comment = $parser->getDocComment();
+            $newComment = $this->replaceTemplateTypesInComment($comment);
+            $schema->addDocComment($newComment);
+        }
 
         $parameters = $method->getParameters();
         foreach ($parameters as $parameter) {
@@ -131,8 +142,8 @@ class TemplateSchema extends Schema
             }
 
             $substitute = $template->getSubstituteType();
-            if($substitute[0] !== "\\") {
-                $substitute = "\\".$substitute;
+            if ($substitute[0] !== "\\") {
+                $substitute = "\\" . $substitute;
             }
             $body = str_replace($search, $substitute, $body);
         }
@@ -183,6 +194,13 @@ class TemplateSchema extends Schema
             $fieldSchema->setDefaultValue($defaultValue);
         }
 
+        if($property->getDocComment() !== false){
+            $parser = new CommentReader($property->getDocComment());
+            $comment = $parser->getDocComment();
+            $newComment = $this->replaceTemplateTypesInComment($comment);
+            $fieldSchema->addDocComment($newComment);
+        }
+
         return $fieldSchema;
     }
 
@@ -210,5 +228,44 @@ class TemplateSchema extends Schema
     public function isStrict()
     {
         return $this->bodyReader->isStrict();
+    }
+
+    public function getDocComment(): ?DocComment
+    {
+        if ($this->reflectedObject->getDocComment() === false) {
+            return null;
+        }
+        $comment = $this->reflectedObject->getDocComment();
+        $parser = new CommentReader($comment);
+        $comment = $parser->getDocComment();
+
+        $newComment = $this->replaceTemplateTypesInComment($comment);
+        return $newComment;
+    }
+
+    protected function replaceTemplateTypesInComment(DocComment $comment): DocComment
+    {
+        if ($comment->getDescription()) {
+            $newDescription = $this->replaceTemplateTypesInBody($comment->getDescription(), $this->bodyReader->getUsedNamespaces());
+            $comment->setDescription($newDescription);
+        }
+        $tags = $comment->getTags();
+        $newTags = new TagList();
+        foreach ($tags as $tag) {
+            $caster = new SimpleTagTypeCaster($tag);
+            if (!$caster->getValue()) {
+                $newTags->add($tag);
+                continue;
+            }
+            $simpleTag = $caster->getValue();
+            $newDescription = $this->replaceTemplateTypesInBody($simpleTag->getDescription(), $this->bodyReader->getUsedNamespaces());
+            $newTag = new SimpleTag($simpleTag->getName(), $newDescription);
+            $newTags->add($newTag);
+        }
+        $comment->clearTags();
+        foreach ($newTags as $tag) {
+            $comment->addTag($tag);
+        }
+        return $comment;
     }
 }

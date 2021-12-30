@@ -3,7 +3,7 @@
 use Inferred\Tools\Templates\ListTemplate;
 use Inferred\Types\T1;
 use Inferred\Types\TemplateType;
-use InferredTests\Templates\TypeCasterTemplate;
+use Inferred\Tools\Templates\TypeCasterTemplate;
 use InferredTests\User\SomeClass;
 use PHPUnit\Framework\TestCase;
 

@@ -6,6 +6,7 @@ namespace Inferred;
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
 use Inferred\Collections\StringList;
+use Inferred\PhpDoc\DocComment;
 
 abstract class Schema
 {
@@ -20,6 +21,8 @@ abstract class Schema
     abstract public function getUsedNamespaces(): StringList;
 
     abstract public function isStrict();
+
+    abstract public function getDocComment() : ?DocComment;
 
     public function getNamespace(): ?string
     {

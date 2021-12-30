@@ -13,6 +13,7 @@ class MethodSchema
     protected ?Types\ITypeSchema $returnType = null;
     protected Visibility $visibility = Visibility::Private;
     private ?string $body = null;
+    private ?PhpDoc\DocComment $comment = null;
 
     public function __construct(string $name)
     {
@@ -67,5 +68,14 @@ class MethodSchema
     public function getBody() : ?string
     {
         return $this->body;
+    }
+
+    public function addDocComment(PhpDoc\DocComment $comment)
+    {
+        $this->comment = $comment;
+    }
+
+    public function getDocComment() : ?PhpDoc\DocComment {
+        return $this->comment;
     }
 }

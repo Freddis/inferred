@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace InferredTests\Templates;
+namespace Inferred\Tools\Templates;
 
 use Inferred\Types\T1;
 
@@ -11,13 +11,12 @@ use Inferred\Types\T1;
 final class TypeCasterTemplate
 {
     /**
-     *
-     * @var T1|mixed
+     * @var T1|mixed Value that's going to be cast
      */
     protected mixed $value;
 
     /**
-     * @param T1|mixed $value
+     * @param T1|mixed $value Value that needs to be cast
      */
     public function __construct(mixed $value = null)
     {

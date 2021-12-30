@@ -5,6 +5,7 @@ namespace InferredTests\User;
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
 use Inferred\Collections\StringList;
+use Inferred\PhpDoc\DocComment;
 use Inferred\Schema;
 
 class SimpleSchema extends Schema
@@ -26,6 +27,11 @@ class SimpleSchema extends Schema
 
     public function isStrict()
     {
-       return false;
+        return false;
+    }
+
+    public function getDocComment(): ?DocComment
+    {
+        return null;
     }
 }
