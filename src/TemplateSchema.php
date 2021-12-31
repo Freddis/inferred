@@ -45,6 +45,9 @@ class TemplateSchema extends Schema
         $this->templateTypes->add($type);
     }
 
+    /**
+     * @throws ReflectionException
+     */
     public function getMethods(): MethodSchemaList
     {
         $result = new MethodSchemaList();
@@ -55,6 +58,9 @@ class TemplateSchema extends Schema
         return $result;
     }
 
+    /**
+     * @throws ReflectionException
+     */
     protected function createMethodSchema(ReflectionMethod $method): MethodSchema
     {
         $schema = new MethodSchema($method->getName());
@@ -63,7 +69,7 @@ class TemplateSchema extends Schema
         $replacedBody = $this->replaceTemplateTypesInBody($body, $namespaces);
         $schema->setBody($replacedBody);
 
-        $returnType = $this->createReturnType($method, $namespaces);
+        $returnType = $this->createReturnType($method);
         if ($returnType) {
             $schema->setReturnType($returnType);
         }
@@ -77,11 +83,15 @@ class TemplateSchema extends Schema
             $schema->setVisibility(Visibility::Private);
         }
 
+        $schema->setIsFinal($method->isFinal());
+        $schema->setIsStatic($method->isStatic());
+        $schema->setIsAbstract($method->isAbstract());
+
         if ($method->getDocComment()) {
             $parser = new CommentReader($method->getDocComment());
             $comment = $parser->getDocComment();
             $newComment = $this->replaceTemplateTypesInComment($comment);
-            $schema->addDocComment($newComment);
+            $schema->setDocComment($newComment);
         }
 
         $parameters = $method->getParameters();
@@ -183,8 +193,11 @@ class TemplateSchema extends Schema
             $fieldSchema->setVisibility(Visibility::Private);
         }
 
+        $fieldSchema->setIsStatic($property->isStatic());
+
         if ($property->getType()) {
-            $type = new TypeSchema($property->getType()->getName());
+            $newType = $this->replaceTemplateTypes($property->getType()->getName());
+            $type = new TypeSchema($newType);
             $type->setNullable($property->getType()->allowsNull());
             $fieldSchema->setType($type);
         }
@@ -198,7 +211,7 @@ class TemplateSchema extends Schema
             $parser = new CommentReader($property->getDocComment());
             $comment = $parser->getDocComment();
             $newComment = $this->replaceTemplateTypesInComment($comment);
-            $fieldSchema->addDocComment($newComment);
+            $fieldSchema->setDocComment($newComment);
         }
 
         return $fieldSchema;
@@ -225,7 +238,7 @@ class TemplateSchema extends Schema
         return $result;
     }
 
-    public function isStrict()
+    public function isStrict() : bool
     {
         return $this->bodyReader->isStrict();
     }

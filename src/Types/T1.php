@@ -2,7 +2,7 @@
 
 namespace Inferred\Types;
 
-abstract class T1
+class T1
 {
 
 }

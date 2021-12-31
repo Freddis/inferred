@@ -3,6 +3,7 @@
 use Inferred\Collections\FieldSchemaList;
 use Inferred\Collections\MethodSchemaList;
 use Inferred\Collections\ParameterSchemaList;
+use Inferred\Collections\StringList;
 use Inferred\Collections\TemplateTypeList;
 use Inferred\FieldSchema;
 use Inferred\MethodSchema;
@@ -20,13 +21,15 @@ class CollectionsTest extends TestCase
             new MethodSchemaList(),
             new FieldSchemaList(),
             new ParameterSchemaList(),
-            new TemplateTypeList()
+            new TemplateTypeList(),
+            new StringList(),
         ];
         $items = [
             new MethodSchema("test"),
             new FieldSchema("test"),
             new ParameterSchema("test", null),
             new TemplateType(T1::class,T1::class),
+            "test",
         ];
         foreach($lists as $i => $list) {
             $list->add($items[$i]);
